@@ -11,16 +11,17 @@ import retrofit2.HttpException
 class BlogPagingSource @Inject constructor(private val blogRepository: BlogRepository) :
   PagingSource<Int, BlogsItem>() {
   override fun getRefreshKey(state: PagingState<Int, BlogsItem>): Int? {
-    return state?.anchorPosition?.let {position ->
-      state?.closestPageToPosition(position)?.prevKey?.plus(1)
-        ?: state?.closestPageToPosition(position)?.nextKey?.minus(1)
+    return state.anchorPosition?.let { position ->
+      state.closestPageToPosition(position)?.prevKey?.plus(1)
+        ?: state.closestPageToPosition(position)?.nextKey?.minus(1)
     }
   }
 
   override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BlogsItem> {
     val page = params.key ?: 1
-    val response = blogRepository.getBlogList(page, 10)
     return try {
+      val response = blogRepository.getBlogList(page, 10)
+
       LoadResult.Page(
         data = response,
         prevKey = null,
